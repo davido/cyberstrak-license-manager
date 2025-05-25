@@ -35,14 +35,14 @@ public class CommandLineApp implements CommandLineRunner {
   private void createSampleLicenses() {
     License one = new License();
     one.setSerial("SERIAL_NO_1");
-    one.setKey("KEY_1");
+    one.setLicenseKey("KEY_1");
     one.setProductId("PROD_A");
     one.setEnabled(true);
     one.setDate(LocalDateTime.now());
 
     License two = new License();
     two.setSerial("SERIAL_NO_2");
-    two.setKey("KEY_2");
+    two.setLicenseKey("KEY_2");
     two.setProductId("PROD_A");
     two.setEnabled(false);
 

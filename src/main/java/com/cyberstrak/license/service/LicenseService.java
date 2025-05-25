@@ -65,7 +65,7 @@ public class LicenseService {
     String entityId = payload.entityId();
     String precondition = payload.precondition();
 
-    License license = licenseRepo.findByKeyAndProductId(key, productId).orElse(null);
+    License license = licenseRepo.findByLicenseKeyAndProductId(key, productId).orElse(null);
     if (license == null) throw new ConflictException("The license key '" + key + "' is not valid.");
 
     if (!license.isEnabled()) {
@@ -87,7 +87,7 @@ public class LicenseService {
     if (license.isUpgrade()) {
       if (precondition == null)
         throw new PreconditionRequiredException("Previous license key required.");
-      License previous = licenseRepo.findByKey(precondition).orElse(null);
+      License previous = licenseRepo.findByLicenseKey(precondition).orElse(null);
       if (previous == null) throw new PreconditionFailedException("Invalid upgrade key.");
       if (license.getUpgradeFromKey() != null
           && !license.getUpgradeFromKey().equals(precondition)) {
@@ -100,7 +100,7 @@ public class LicenseService {
       List<LicenseDto> licenses = new ArrayList<>(List.of(toDto(previous), toDto(license)));
       License a = previous;
       while (a.getUpgradeFromKey() != null) {
-        a = licenseRepo.findByKey(a.getUpgradeFromKey()).orElse(null);
+        a = licenseRepo.findByLicenseKey(a.getUpgradeFromKey()).orElse(null);
         if (a != null) {
           licenses.add(toDto(a));
         }
@@ -145,7 +145,7 @@ public class LicenseService {
 
   public LicenseDto getLicense(String key, String aud) {
     return licenseRepo
-        .findByKeyAndProductId(key, aud)
+        .findByLicenseKeyAndProductId(key, aud)
         .map(this::toDto)
         .orElseThrow(() -> new BadRequestException("The license key is not valid"));
   }
@@ -163,7 +163,7 @@ public class LicenseService {
     Object metadata = null;
     return new LicenseDto(
         l.getSerial(),
-        l.getKey(),
+        l.getLicenseKey(),
         l.getProductId(),
         ISSUER_ID,
         exp,

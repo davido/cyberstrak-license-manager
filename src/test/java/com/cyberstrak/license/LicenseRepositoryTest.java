@@ -29,15 +29,15 @@ public class LicenseRepositoryTest {
   void testSaveAndFindByKeyAndProductId() {
     License license = new License();
     license.setSerial("123");
-    license.setKey("ABC123");
+    license.setLicenseKey("ABC123");
     license.setProductId("PROD1");
     license.setEnabled(true);
 
     licenseRepository.save(license);
 
-    Optional<License> found = licenseRepository.findByKeyAndProductId("ABC123", "PROD1");
+    Optional<License> found = licenseRepository.findByLicenseKeyAndProductId("ABC123", "PROD1");
     assertTrue(found.isPresent());
-    assertEquals("ABC123", found.get().getKey());
+    assertEquals("ABC123", found.get().getLicenseKey());
     assertEquals("PROD1", found.get().getProductId());
   }
 
@@ -45,26 +45,26 @@ public class LicenseRepositoryTest {
   void testFindByKeyReturnsLicense() {
     License license = new License();
     license.setSerial("456");
-    license.setKey("DEF456");
+    license.setLicenseKey("DEF456");
     license.setProductId("PROD2");
     license.setEnabled(true);
 
     licenseRepository.save(license);
 
-    Optional<License> found = licenseRepository.findByKey("DEF456");
+    Optional<License> found = licenseRepository.findByLicenseKey("DEF456");
     assertTrue(found.isPresent());
     assertEquals("456", found.get().getSerial());
   }
 
   @Test
   void testFindByKeyReturnsEmptyWhenNotFound() {
-    Optional<License> found = licenseRepository.findByKey("NOT_EXISTING");
+    Optional<License> found = licenseRepository.findByLicenseKey("NOT_EXISTING");
     assertFalse(found.isPresent());
   }
 
   @Test
   void testFindByKeyAndProductIdReturnsEmptyWhenNotFound() {
-    Optional<License> found = licenseRepository.findByKeyAndProductId("NO_KEY", "NO_PROD");
+    Optional<License> found = licenseRepository.findByLicenseKeyAndProductId("NO_KEY", "NO_PROD");
     assertFalse(found.isPresent());
   }
 
@@ -72,7 +72,7 @@ public class LicenseRepositoryTest {
   void testBasicCrudOperations() {
     License license = new License();
     license.setSerial("789");
-    license.setKey("XYZ789");
+    license.setLicenseKey("XYZ789");
     license.setProductId("PROD3");
     license.setEnabled(true);
 

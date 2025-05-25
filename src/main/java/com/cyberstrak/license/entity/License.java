@@ -11,7 +11,7 @@ public class License {
   @Id private String serial;
 
   @Column(nullable = false, unique = true)
-  private String key;
+  private String licenseKey;
 
   @Column(nullable = false)
   private String productId;
@@ -43,12 +43,12 @@ public class License {
     this.serial = serial;
   }
 
-  public String getKey() {
-    return key;
+  public String getLicenseKey() {
+    return licenseKey;
   }
 
-  public void setKey(String key) {
-    this.key = key;
+  public void setLicenseKey(String licenseKey) {
+    this.licenseKey = licenseKey;
   }
 
   public String getProductId() {

@@ -56,7 +56,7 @@ public class LicenseControllerTest {
     // Insert one license
     License l = new License();
     l.setSerial("1");
-    l.setKey("KEY1");
+    l.setLicenseKey("KEY1");
     l.setProductId("PROD1");
     l.setEnabled(true);
     licenseRepository.save(l);
@@ -72,7 +72,7 @@ public class LicenseControllerTest {
     // Save a license to be added
     License license = new License();
     license.setSerial("1");
-    license.setKey("KEY1");
+    license.setLicenseKey("KEY1");
     license.setProductId("PROD1");
     license.setEnabled(true);
     licenseRepository.save(license);
@@ -102,7 +102,7 @@ public class LicenseControllerTest {
     // Save a license to be removed
     License license = new License();
     license.setSerial("1");
-    license.setKey("KEY1");
+    license.setLicenseKey("KEY1");
     license.setProductId("PROD1");
     license.setEnabled(true);
     license.setEntityId("ENTITY1");
@@ -147,7 +147,7 @@ public class LicenseControllerTest {
   void testRemoveLicenseEndpointFailsOnMismatch() throws Exception {
     License license = new License();
     license.setSerial("1");
-    license.setKey("KEY1");
+    license.setLicenseKey("KEY1");
     license.setProductId("PROD1");
     license.setEnabled(true);
     license.setEntityId("ENTITY1");
@@ -187,7 +187,7 @@ public class LicenseControllerTest {
   void testGetLicenseEndpoint() throws Exception {
     License license = new License();
     license.setSerial("1");
-    license.setKey("KEY1");
+    license.setLicenseKey("KEY1");
     license.setProductId("PROD1");
     license.setEnabled(true);
     licenseRepository.save(license);
@@ -218,13 +218,13 @@ public class LicenseControllerTest {
   void testDumpLicensesEndpoint() throws Exception {
     License l1 = new License();
     l1.setSerial("1");
-    l1.setKey("KEY1");
+    l1.setLicenseKey("KEY1");
     l1.setProductId("PROD1");
     l1.setEnabled(true);
 
     License l2 = new License();
     l2.setSerial("2");
-    l2.setKey("KEY2");
+    l2.setLicenseKey("KEY2");
     l2.setProductId("PROD2");
     l2.setEnabled(true);
 

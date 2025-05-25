@@ -55,7 +55,7 @@ public class LicenseServiceTest {
   void testCountReturnsCorrectCount() {
     License l1 = new License();
     l1.setSerial("1");
-    l1.setKey("KEY1");
+    l1.setLicenseKey("KEY1");
     l1.setProductId("PROD1");
     l1.setEnabled(true);
     licenseRepository.save(l1);
@@ -67,7 +67,7 @@ public class LicenseServiceTest {
   void testAddLicenseValidLicense() {
     License license = new License();
     license.setSerial("1");
-    license.setKey("KEY1");
+    license.setLicenseKey("KEY1");
     license.setProductId("PROD1");
     license.setEnabled(true);
 
@@ -99,7 +99,7 @@ public class LicenseServiceTest {
   void testGetLicenseReturnsDto() {
     License license = new License();
     license.setSerial("1");
-    license.setKey("KEY1");
+    license.setLicenseKey("KEY1");
     license.setProductId("PROD1");
     license.setEnabled(true);
 
@@ -121,13 +121,13 @@ public class LicenseServiceTest {
   void testDumpLicensesReturnsAll() {
     License l1 = new License();
     l1.setSerial("1");
-    l1.setKey("KEY1");
+    l1.setLicenseKey("KEY1");
     l1.setProductId("PROD1");
     l1.setEnabled(true);
 
     License l2 = new License();
     l2.setSerial("2");
-    l2.setKey("KEY2");
+    l2.setLicenseKey("KEY2");
     l2.setProductId("PROD2");
     l2.setEnabled(true);
 
@@ -141,7 +141,7 @@ public class LicenseServiceTest {
   void testRemoveLicensesSuccess() {
     License license = new License();
     license.setSerial("1");
-    license.setKey("KEY1");
+    license.setLicenseKey("KEY1");
     license.setProductId("PROD1");
     license.setEntityId("ENTITY1");
     license.setEnabled(true);
@@ -160,7 +160,7 @@ public class LicenseServiceTest {
   void testRemoveLicensesThrowsOnMismatch() {
     License license = new License();
     license.setSerial("1");
-    license.setKey("KEY1");
+    license.setLicenseKey("KEY1");
     license.setProductId("PROD1");
     license.setEntityId("ENTITY1");
     license.setEnabled(true);
@@ -177,7 +177,7 @@ public class LicenseServiceTest {
   void testGetLicenseReturnsExpectedDto() {
     License license = new License();
     license.setSerial("123");
-    license.setKey("LICENSE123");
+    license.setLicenseKey("LICENSE123");
     license.setProductId("PROD1");
     license.setEnabled(true);
 

@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 /** Repository interface for accessing License entities using Spring Data JPA. */
 @Repository
 public interface LicenseRepository extends JpaRepository<License, String> {
-  Optional<License> findByKeyAndProductId(String key, String productId);
+  Optional<License> findByLicenseKeyAndProductId(String licenseKey, String productId);
 
-  Optional<License> findByKey(String key);
+  Optional<License> findByLicenseKey(String licenseKey);
 }

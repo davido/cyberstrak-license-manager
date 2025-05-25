@@ -22,19 +22,19 @@ public class LicenseShellCommands {
 
     License license1 = new License();
     license1.setSerial("SERIAL_NO_1");
-    license1.setKey("LICENSE_KEY_1");
+    license1.setLicenseKey("LICENSE_KEY_1");
     license1.setProductId("3e200daa-6bf8-470b-bd6a-4f55996052c3");
     license1.setEnabled(true);
 
     License license2 = new License();
     license2.setSerial("SERIAL_NO_2");
-    license2.setKey("LICENSE_KEY_2");
+    license2.setLicenseKey("LICENSE_KEY_2");
     license2.setProductId("3e200daa-6bf8-470b-bd6a-4f55996052c3");
     license2.setEnabled(false);
 
     License license3 = new License();
     license3.setSerial("SERIAL_NO_3");
-    license3.setKey("LICENSE_KEY_3");
+    license3.setLicenseKey("LICENSE_KEY_3");
     license3.setProductId("3e200daa-6bf8-470b-bd6a-4f55996052c3");
     license3.setEnabled(true);
     license3.setEntityId("595959595959595-|-User");
@@ -58,7 +58,7 @@ public class LicenseShellCommands {
                 String.format(
                     "- %s | key: %s | product: %s | enabled: %s",
                     license.getSerial(),
-                    license.getKey(),
+                    license.getLicenseKey(),
                     license.getProductId(),
                     license.isEnabled()))
         .collect(Collectors.joining("\n", "Found licenses:\n", ""));
@@ -67,7 +67,7 @@ public class LicenseShellCommands {
   @ShellMethod(key = "show-license-details", value = "Show detailed info for a license by key.")
   public String showLicenseDetails(String key) {
     return licenseRepository
-        .findByKey(key)
+        .findByLicenseKey(key)
         .map(
             license ->
                 String.format(
@@ -82,7 +82,7 @@ public class LicenseShellCommands {
                     Date: %s
                     """,
                     license.getSerial(),
-                    license.getKey(),
+                    license.getLicenseKey(),
                     license.getProductId(),
                     license.isEnabled(),
                     license.getNumberOfSeats(),

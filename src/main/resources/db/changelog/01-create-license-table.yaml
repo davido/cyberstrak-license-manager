@@ -13,7 +13,7 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: key
+                  name: license_key
                   type: VARCHAR(255)
                   constraints:
                     unique: true
