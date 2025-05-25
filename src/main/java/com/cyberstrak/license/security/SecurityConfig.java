@@ -1,5 +1,6 @@
 package com.cyberstrak.license.security;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.*;
 import org.springframework.security.authentication.*;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -11,6 +12,7 @@ import org.springframework.security.web.SecurityFilterChain;
  * and root endpoints.
  */
 @Configuration
+@ConditionalOnWebApplication
 public class SecurityConfig {
 
   @Bean
