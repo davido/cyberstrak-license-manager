@@ -22,15 +22,28 @@ if [ -z "$DB_URL" ] || [ -z "$DB_USERNAME" ] || [ -z "$DB_PASSWORD" ] || [ -z "$
   exit 1
 fi
 
-# 🔥 3️⃣ Log file
-LOG_FILE="shell-runner.log"
+# 🔥 3️⃣ Auto-detect Hibernate dialect
+if [[ "$DB_URL" == jdbc:mysql:* ]] || [[ "$DB_URL" == jdbc:mariadb:* ]]; then
+  DB_DIALECT="org.hibernate.dialect.MariaDBDialect"
+elif [[ "$DB_URL" == jdbc:postgresql:* ]]; then
+  DB_DIALECT="org.hibernate.dialect.PostgreSQLDialect"
+elif [[ "$DB_URL" == jdbc:h2:* ]]; then
+  DB_DIALECT="org.hibernate.dialect.H2Dialect"
+elif [[ "$DB_URL" == jdbc:sqlite:* ]]; then
+  DB_DIALECT="org.hibernate.dialect.SQLiteDialect"
+else
+  echo "❌ Could not auto-detect dialect for JDBC URL: $DB_URL"
+  echo "Please set it manually with: export DB_DIALECT=org.hibernate.dialect.YourDialect"
+  exit 1
+fi
 
-# 🔥 4️⃣ Start shell-runner in foreground, log to file
-java -jar shell-runner.jar \
-  --spring.datasource.url="$DB_URL" \
-  --spring.datasource.username="$DB_USERNAME" \
-  --spring.datasource.password="$DB_PASSWORD" \
-  --spring.datasource.driver-class-name="$DB_DRIVER" \
-  > "$LOG_FILE" 2>&1
+# 🔥 4️⃣ Start shell-runner in foreground with JVM system properties (not CLI args!)
+java \
+  -Dspring.datasource.url="$DB_URL" \
+  -Dspring.datasource.username="$DB_USERNAME" \
+  -Dspring.datasource.password="$DB_PASSWORD" \
+  -Dspring.datasource.driver-class-name="$DB_DRIVER" \
+  -Dspring.jpa.database-platform="$DB_DIALECT" \
+  -jar shell-runner.jar
 
 echo "✅ shell-runner finished. Logs: $LOG_FILE"
