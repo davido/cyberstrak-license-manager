@@ -101,7 +101,7 @@
                 <shell.enabled>false</shell.enabled>
             </properties>
             <build>
-                <finalName>rest-runner-${project.version}</finalName>
+                <finalName>rest-runner</finalName>
                 <plugins>
                     <plugin>
                         <groupId>org.springframework.boot</groupId>
@@ -121,7 +121,7 @@
                 <shell.enabled>true</shell.enabled>
             </properties>
             <build>
-                <finalName>shell-runner-${project.version}</finalName>
+                <finalName>shell-runner</finalName>
                 <plugins>
                     <plugin>
                         <groupId>org.springframework.boot</groupId>
