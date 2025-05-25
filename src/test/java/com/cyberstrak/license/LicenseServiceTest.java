@@ -37,8 +37,8 @@ public class LicenseServiceTest {
 
     var result = licenseService.getLicense("LICENSE123", "PROD1");
 
-    assertEquals("123", result.get("id"));
-    assertEquals("LICENSE123", result.get("key"));
-    assertEquals("PROD1", result.get("aud"));
+    assertEquals("123", result.id());
+    assertEquals("LICENSE123", result.key());
+    assertEquals("PROD1", result.aud());
   }
 }

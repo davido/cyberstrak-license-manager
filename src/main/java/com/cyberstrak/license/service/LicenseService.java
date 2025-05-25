@@ -1,12 +1,14 @@
 package com.cyberstrak.license.service;
 
 import com.cyberstrak.license.dto.AddLicenseRequest;
+import com.cyberstrak.license.dto.LicenseDto;
 import com.cyberstrak.license.entity.License;
 import com.cyberstrak.license.exception.*;
 import com.cyberstrak.license.repository.LicenseRepository;
 import jakarta.annotation.PostConstruct;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import javax.sql.DataSource;
 import org.apache.commons.logging.Log;
@@ -52,7 +54,7 @@ public class LicenseService {
     return licenseRepo.count();
   }
 
-  public List<Map<String, Object>> addLicense(AddLicenseRequest payload) {
+  public List<LicenseDto> addLicense(AddLicenseRequest payload) {
     String key = payload.license().key();
     String productId = payload.license().aud();
     String entityId = payload.entityId();
@@ -90,27 +92,29 @@ public class LicenseService {
         throw new PreconditionFailedException("Previous upgrade license is unassigned.");
       }
 
-      List<Map<String, Object>> licenses =
-          new ArrayList<>(List.of(toJsonDict(previous), toJsonDict(license)));
+      List<LicenseDto> licenses = new ArrayList<>(List.of(toDto(previous), toDto(license)));
       License a = previous;
       while (a.getUpgradeFromKey() != null) {
         a = licenseRepo.findByKey(a.getUpgradeFromKey()).orElse(null);
-        if (a != null) licenses.add(toJsonDict(a));
+        if (a != null) {
+          licenses.add(toDto(a));
+        }
       }
       return licenses;
     } else {
       license.setEntityId(entityId);
       license.setDate(LocalDateTime.now());
       licenseRepo.save(license);
-      return List.of(toJsonDict(license));
+      return List.of(toDto(license));
     }
   }
 
-  public void removeLicenses(List<Map<String, Object>> cluster, String entityId) {
+  public void removeLicenses(List<LicenseDto> cluster, String entityId) {
     List<License> found = new ArrayList<>();
-    for (Map<String, Object> entry : cluster) {
-      String serial = (String) entry.get("id");
-      String aud = (String) entry.get("aud");
+
+    for (LicenseDto dto : cluster) {
+      String serial = dto.id();
+      String aud = dto.aud();
 
       licenseRepo
           .findById(serial)
@@ -134,31 +138,32 @@ public class LicenseService {
     }
   }
 
-  public Map<String, Object> getLicense(String key, String aud) {
+  public LicenseDto getLicense(String key, String aud) {
     return licenseRepo
         .findByKeyAndProductId(key, aud)
-        .map(this::toJsonDict)
+        .map(this::toDto)
         .orElseThrow(() -> new BadRequestException("The license key is not valid"));
   }
 
-  public List<Map<String, Object>> dumpLicenses() {
-    return licenseRepo.findAll().stream().map(this::toJsonDict).toList();
+  public List<LicenseDto> dumpLicenses() {
+    return licenseRepo.findAll().stream().map(this::toDto).toList();
   }
 
-  public Map<String, Object> toJsonDict(License l) {
-    Map<String, Object> json = new LinkedHashMap<>();
-    json.put("id", l.getSerial());
-    json.put("key", l.getKey());
-    json.put("aud", l.getProductId());
-    json.put("iss", ISSUER_ID);
-    json.put(
-        "exp",
+  private LicenseDto toDto(License l) {
+    Map<String, String> editions = Map.of("en", "Full Edition");
+    Long exp =
         l.getExpirationDate() != null
-            ? l.getExpirationDate().atZone(java.time.ZoneId.systemDefault()).toEpochSecond()
-            : null);
-    json.put("numberOfSeats", l.getNumberOfSeats());
-    json.put("editions", Map.of("en", "Full Edition"));
-    json.put("metadata", null);
-    return json;
+            ? l.getExpirationDate().atZone(ZoneId.systemDefault()).toEpochSecond()
+            : null;
+    Object metadata = null;
+    return new LicenseDto(
+        l.getSerial(),
+        l.getKey(),
+        l.getProductId(),
+        ISSUER_ID,
+        exp,
+        l.getNumberOfSeats(),
+        editions,
+        metadata);
   }
 }

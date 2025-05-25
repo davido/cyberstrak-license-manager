@@ -1,6 +1,7 @@
 package com.cyberstrak.license.controller;
 
 import com.cyberstrak.license.dto.AddLicenseRequest;
+import com.cyberstrak.license.dto.LicenseDto;
 import com.cyberstrak.license.dto.RemoveLicenseRequest;
 import com.cyberstrak.license.service.LicenseService;
 import java.util.List;
@@ -37,13 +38,13 @@ public class LicenseController {
 
   @PostMapping("/add_license")
   public ResponseEntity<?> addLicense(@RequestBody AddLicenseRequest payload) {
-    List<Map<String, Object>> licenses = licenseService.addLicense(payload);
+    List<LicenseDto> licenses = licenseService.addLicense(payload);
     return ResponseEntity.ok(Map.of("licenses", licenses));
   }
 
   @PostMapping("/remove_license")
   public ResponseEntity<?> removeLicense(@RequestBody RemoveLicenseRequest request) {
-    List<Map<String, Object>> cluster = request.licenseCluster().licenses();
+    List<LicenseDto> cluster = request.licenseCluster().licenses();
     String entityId = request.entityId();
 
     licenseService.removeLicenses(cluster, entityId);
@@ -51,9 +52,9 @@ public class LicenseController {
   }
 
   @GetMapping("/get_license")
-  public ResponseEntity<?> getLicense(
+  public ResponseEntity<LicenseDto> getLicense(
       @RequestParam("key") String key, @RequestParam("aud") String aud) {
-    Map<String, Object> license = licenseService.getLicense(key, aud);
+    LicenseDto license = licenseService.getLicense(key, aud);
     return ResponseEntity.ok(license);
   }
 
