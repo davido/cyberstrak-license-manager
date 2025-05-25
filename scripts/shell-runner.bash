@@ -37,13 +37,14 @@ else
   exit 1
 fi
 
-# 🔥 4️⃣ Start shell-runner in foreground with JVM system properties (not CLI args!)
+# 🔥 4️⃣ Start shell-runner in foreground with JVM system properties (including disabling web server!)
 java \
   -Dspring.datasource.url="$DB_URL" \
   -Dspring.datasource.username="$DB_USERNAME" \
   -Dspring.datasource.password="$DB_PASSWORD" \
   -Dspring.datasource.driver-class-name="$DB_DRIVER" \
   -Dspring.jpa.database-platform="$DB_DIALECT" \
+  -Dspring.main.web-application-type=none \
   -jar shell-runner.jar
 
 echo "✅ shell-runner finished. Logs: $LOG_FILE"

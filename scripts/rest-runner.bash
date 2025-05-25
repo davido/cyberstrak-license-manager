@@ -37,16 +37,17 @@ else
   exit 1
 fi
 
-# 🔥 3️⃣ Log file
+# 🔥 4️⃣ Log file
 LOG_FILE="rest-runner.log"
 
-# 🔥 4️⃣ Start app with dynamic DB config
-nohup java -jar rest-runner.jar \
-  --spring.datasource.url="$DB_URL" \
-  --spring.datasource.username="$DB_USERNAME" \
-  --spring.datasource.password="$DB_PASSWORD" \
-  --spring.datasource.driver-class-name="$DB_DRIVER" \
-  --spring.jpa.database-platform="$DB_DIALECT" \
+# 🔥 5️⃣ Start app with dynamic DB config
+nohup java \
+  -Dspring.datasource.url="$DB_URL" \
+  -Dspring.datasource.username="$DB_USERNAME" \
+  -Dspring.datasource.password="$DB_PASSWORD" \
+  -Dspring.datasource.driver-class-name="$DB_DRIVER" \
+  -Dspring.jpa.database-platform="$DB_DIALECT" \
+  -jar rest-runner.jar \
   > "$LOG_FILE" 2>&1 &
 
 echo "✅ rest-runner started in background. Logs: $LOG_FILE"
