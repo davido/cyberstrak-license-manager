@@ -10,13 +10,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
-@SpringBootTest(
-    classes = LicenseManagerApplication.class,
-    properties = {
-      "spring.shell.interactive.enabled=false",
-      "spring.datasource.url=jdbc:h2:mem:cyberstrakdb;NON_KEYWORDS=KEY;DB_CLOSE_DELAY=-1",
-    })
+@SpringBootTest(classes = LicenseManagerApplication.class)
+@ActiveProfiles("test")
 public class LicenseRepositoryTest {
 
   @Autowired private LicenseRepository licenseRepository;
