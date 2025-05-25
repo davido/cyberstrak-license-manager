@@ -6,8 +6,8 @@ import com.cyberstrak.license.dto.RemoveLicenseRequest;
 import com.cyberstrak.license.service.LicenseService;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping
 public class LicenseController {
-  private static final Log LOG = LogFactory.getLog(LicenseController.class);
+  private static final Logger logger = LoggerFactory.getLogger(LicenseController.class);
 
   private final LicenseService licenseService;
 
@@ -27,18 +27,24 @@ public class LicenseController {
 
   @GetMapping("/")
   public String hello() {
-    LOG.debug("Hello endpoint");
-    return "Hello World!";
+    logger.debug("Hello endpoint called");
+    String response = "Hello World!";
+    logger.debug("Returning: {}", response);
+    return response;
   }
 
   @GetMapping("/info")
   public String info() {
-    return "License count: " + licenseService.count();
+    long count = licenseService.count();
+    String response = "License count: " + count;
+    logger.debug("Returning: {}", response);
+    return response;
   }
 
   @PostMapping("/add_license")
   public ResponseEntity<?> addLicense(@RequestBody AddLicenseRequest payload) {
     List<LicenseDto> licenses = licenseService.addLicense(payload);
+    logger.debug("Returning licenses: {}", licenses);
     return ResponseEntity.ok(Map.of("licenses", licenses));
   }
 
@@ -46,8 +52,9 @@ public class LicenseController {
   public ResponseEntity<?> removeLicense(@RequestBody RemoveLicenseRequest request) {
     List<LicenseDto> cluster = request.licenseCluster().licenses();
     String entityId = request.entityId();
-
+    logger.debug("Removing licenses: {}, entityId: {}", cluster, entityId);
     licenseService.removeLicenses(cluster, entityId);
+    logger.debug("Licenses removed successfully");
     return ResponseEntity.ok().build();
   }
 
@@ -55,11 +62,14 @@ public class LicenseController {
   public ResponseEntity<LicenseDto> getLicense(
       @RequestParam("key") String key, @RequestParam("aud") String aud) {
     LicenseDto license = licenseService.getLicense(key, aud);
+    logger.debug("Returning license: {}", license);
     return ResponseEntity.ok(license);
   }
 
   @GetMapping("/dump_licenses")
   public ResponseEntity<?> dumpLicenses() {
-    return ResponseEntity.ok(licenseService.dumpLicenses());
+    var licenses = licenseService.dumpLicenses();
+    logger.debug("Returning all licenses: {}", licenses);
+    return ResponseEntity.ok(licenses);
   }
 }

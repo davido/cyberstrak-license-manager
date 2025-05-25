@@ -3,23 +3,28 @@ package com.cyberstrak.license.service;
 import com.cyberstrak.license.dto.AddLicenseRequest;
 import com.cyberstrak.license.dto.LicenseDto;
 import com.cyberstrak.license.entity.License;
-import com.cyberstrak.license.exception.*;
+import com.cyberstrak.license.exception.BadRequestException;
+import com.cyberstrak.license.exception.ConflictException;
+import com.cyberstrak.license.exception.PreconditionFailedException;
+import com.cyberstrak.license.exception.PreconditionRequiredException;
 import com.cyberstrak.license.repository.LicenseRepository;
 import jakarta.annotation.PostConstruct;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import javax.sql.DataSource;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /** Service for business logic related to license validation, upgrades, and entity assignment. */
 @Service
 public class LicenseService {
-  private static final Log LOG = LogFactory.getLog(LicenseService.class);
+  private static final Logger logger = LoggerFactory.getLogger(LicenseService.class);
 
   private final LicenseRepository licenseRepo;
   private final DataSource dataSource;
@@ -43,7 +48,7 @@ public class LicenseService {
 
   @PostConstruct
   public void logDbUrl() throws SQLException {
-    LOG.debug("H2 DB URL: " + dataSource.getConnection().getMetaData().getURL());
+    logger.debug("H2 DB URL: {}", dataSource.getConnection().getMetaData().getURL());
   }
 
   public boolean checkAuth(String username, String password) {
