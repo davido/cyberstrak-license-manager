@@ -14,11 +14,14 @@ DB_URL="${1:-$DB_URL}"
 DB_USERNAME="${2:-$DB_USERNAME}"
 DB_PASSWORD="${3:-$DB_PASSWORD}"
 DB_DRIVER="${4:-$DB_DRIVER}"
+ISSUER_ID="${5:-$ISSUER_ID}"
+ISSUER_SECRET="${6:-$ISSUER_SECRET}"
+LOG_FILE="${7:-$LOG_FILE}"
 
 # 🛑 2️⃣ Validate
-if [ -z "$DB_URL" ] || [ -z "$DB_USERNAME" ] || [ -z "$DB_PASSWORD" ] || [ -z "$DB_DRIVER" ]; then
-  echo "Usage: ./rest-runner.bash <DB_URL> <DB_USERNAME> <DB_PASSWORD> <DRIVER_CLASS>"
-  echo "Or set the environment variables: DB_URL, DB_USERNAME, DB_PASSWORD, DB_DRIVER"
+if [ -z "$DB_URL" ] || [ -z "$DB_USERNAME" ] || [ -z "$DB_PASSWORD" ] || [ -z "$DB_DRIVER" ] || [ -z "$ISSUER_ID" ] || [ -z "$ISSUER_SECRET" ]; || [ -z "$LOG_FILE" ]; then
+  echo "Usage: ./rest-runner.bash <DB_URL> <DB_USERNAME> <DB_PASSWORD> <DRIVER_CLASS> <ISSUER_ID> <ISSUER_SECRET> <LOG_FILE>"
+  echo "Or set the environment variables: DB_URL, DB_USERNAME, DB_PASSWORD, DB_DRIVER ISSUER_ID ISSUER_SECRET LOG_FILE"
   exit 1
 fi
 
@@ -47,7 +50,10 @@ nohup java \
   -Dspring.datasource.password="$DB_PASSWORD" \
   -Dspring.datasource.driver-class-name="$DB_DRIVER" \
   -Dspring.jpa.database-platform="$DB_DIALECT" \
+  -Dissuer.id="$ISSUER_ID" \
+  -Dissuer.secret="$ISSUER_SECRET" \
+  -Dlogging.file.name="$LOG_FILE" \
   -jar rest-runner.jar \
-  > "$LOG_FILE" 2>&1 &
+  &
 
 echo "✅ rest-runner started in background. Logs: $LOG_FILE"
