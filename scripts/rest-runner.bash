@@ -19,7 +19,7 @@ ISSUER_SECRET="${6:-$ISSUER_SECRET}"
 LOG_FILE="${7:-$LOG_FILE}"
 
 # 🛑 2️⃣ Validate
-if [ -z "$DB_URL" ] || [ -z "$DB_USERNAME" ] || [ -z "$DB_PASSWORD" ] || [ -z "$DB_DRIVER" ] || [ -z "$ISSUER_ID" ] || [ -z "$ISSUER_SECRET" ]; || [ -z "$LOG_FILE" ]; then
+if [ -z "$DB_URL" ] || [ -z "$DB_USERNAME" ] || [ -z "$DB_PASSWORD" ] || [ -z "$DB_DRIVER" ] || [ -z "$ISSUER_ID" ] || [ -z "$ISSUER_SECRET" ] || [ -z "$LOG_FILE" ]; then
   echo "Usage: ./rest-runner.bash <DB_URL> <DB_USERNAME> <DB_PASSWORD> <DRIVER_CLASS> <ISSUER_ID> <ISSUER_SECRET> <LOG_FILE>"
   echo "Or set the environment variables: DB_URL, DB_USERNAME, DB_PASSWORD, DB_DRIVER ISSUER_ID ISSUER_SECRET LOG_FILE"
   exit 1
@@ -39,9 +39,6 @@ else
   echo "Please set it manually with: export DB_DIALECT=org.hibernate.dialect.YourDialect"
   exit 1
 fi
-
-# 🔥 4️⃣ Log file
-LOG_FILE="rest-runner.log"
 
 # 🔥 5️⃣ Start app with dynamic DB config
 nohup java \
