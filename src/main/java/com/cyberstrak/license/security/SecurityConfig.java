@@ -21,7 +21,6 @@ public class SecurityConfig {
             auth ->
                 auth.requestMatchers(
                         "/",
-                        "/actuator/**",
                         "/swagger-ui.html",
                         "/v3/api-docs/**",
                         "/swagger-ui/**")
