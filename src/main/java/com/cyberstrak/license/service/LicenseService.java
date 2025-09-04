@@ -1,6 +1,7 @@
 package com.cyberstrak.license.service;
 
 import com.cyberstrak.license.dto.AddLicenseRequest;
+import com.cyberstrak.license.dto.CreateLicenseRequest;
 import com.cyberstrak.license.dto.LicenseDto;
 import com.cyberstrak.license.entity.License;
 import com.cyberstrak.license.exception.BadRequestException;
@@ -10,6 +11,7 @@ import com.cyberstrak.license.exception.PreconditionRequiredException;
 import com.cyberstrak.license.repository.LicenseRepository;
 import jakarta.annotation.PostConstruct;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -48,15 +50,44 @@ public class LicenseService {
 
   @PostConstruct
   public void logDbUrl() throws SQLException {
-    logger.debug("H2 DB URL: {}", dataSource.getConnection().getMetaData().getURL());
+    logger.debug("DB URL: {}", dataSource.getConnection().getMetaData().getURL());
   }
 
   public boolean checkAuth(String username, String password) {
+	  if (!ISSUER_ID.equals(username) || !ISSUER_SECRET.equals(password)) {
+		  logger.error("Wrong user or password combination: " + username + ":" + password);
+	  }
     return ISSUER_ID.equals(username) && ISSUER_SECRET.equals(password);
   }
 
   public long count() {
     return licenseRepo.count();
+  }
+
+  public LicenseDto createLicense(CreateLicenseRequest payload) {
+	    String key = payload.license().key();
+	    String productId = payload.license().aud();
+	    String serial = payload.serial();
+	    Long expiration = payload.expiration();
+	
+	    License license = licenseRepo.findByLicenseKey(serial).orElse(null);
+	    if (license != null) throw new ConflictException("The license id '" + serial + "' already exists.");
+
+	  license = new License();
+
+	  license.setLicenseKey(key);
+	  license.setProductId(productId);
+      license.setSerial(serial);
+      license.setNumberOfSeats(payload.numberOfSeats());
+      license.setExpirationDate(
+    		    LocalDateTime.ofInstant(Instant.ofEpochSecond(expiration), ZoneId.systemDefault())
+      );
+      // Defaults
+      license.setEnabled(true);
+      license.setDate(LocalDateTime.now());
+
+      licenseRepo.save(license);
+      return toDto(license);
   }
 
   public List<LicenseDto> addLicense(AddLicenseRequest payload) {

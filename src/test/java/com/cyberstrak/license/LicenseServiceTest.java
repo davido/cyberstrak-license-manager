@@ -8,12 +8,18 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.cyberstrak.license.dto.AddLicenseRequest;
+import com.cyberstrak.license.dto.CreateLicenseRequest;
 import com.cyberstrak.license.dto.LicenseDto;
 import com.cyberstrak.license.entity.License;
 import com.cyberstrak.license.exception.BadRequestException;
 import com.cyberstrak.license.exception.ConflictException;
 import com.cyberstrak.license.repository.LicenseRepository;
 import com.cyberstrak.license.service.LicenseService;
+
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -61,6 +67,41 @@ public class LicenseServiceTest {
     licenseRepository.save(l1);
 
     assertEquals(1, licenseService.count());
+  }
+
+  @Test
+  void testCreateLicense() {
+    // 1) Heute plus 1 Jahr
+    LocalDate inOneYear = LocalDate.now().plusYears(1);
+
+    // 2) Zeitpunkt angeben (z. B. Mitternacht in System-Zeitzone)
+    LocalDateTime localDateTime = inOneYear.atStartOfDay();
+
+    // 3) In Instant konvertieren
+    Instant instant = localDateTime.atZone(ZoneId.systemDefault()).toInstant();
+
+    // 4) Epoch-Seconds berechnen
+    long epochSeconds = instant.getEpochSecond();
+
+    String id = "SERIAL_42";
+    String key = "KEY_42";
+    String productId = "PROD_42";
+    int numberOfSeats = 2;
+    CreateLicenseRequest request = 
+    		new CreateLicenseRequest(new CreateLicenseRequest.LicenseData(key, productId),
+        		id, epochSeconds,
+        		numberOfSeats);
+
+    LicenseDto result = licenseService.createLicense(request);
+ 
+    assertEquals("SERIAL_42", result.id());
+
+    License created = licenseRepository.findById(id).orElse(null);
+    assertNotNull(created);
+    assertEquals(key, created.getLicenseKey());
+    assertEquals(productId, created.getProductId());
+    assertEquals(numberOfSeats, created.getNumberOfSeats());
+    assertEquals(localDateTime, created.getExpirationDate());
   }
 
   @Test

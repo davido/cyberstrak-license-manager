@@ -1,5 +1,7 @@
 package com.cyberstrak.license.dto;
 
-public record AddLicenseRequest(LicenseData license, String entityId, String precondition) {
-  public record LicenseData(String key, String aud) {}
+import jakarta.validation.constraints.NotNull;
+
+public record AddLicenseRequest(LicenseData license, @NotNull String entityId, String precondition) {
+  public record LicenseData(@NotNull String key, @NotNull String aud) {}
 }

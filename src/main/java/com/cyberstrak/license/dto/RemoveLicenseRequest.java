@@ -2,6 +2,8 @@ package com.cyberstrak.license.dto;
 
 import java.util.List;
 
-public record RemoveLicenseRequest(LicenseCluster licenseCluster, String entityId) {
+import jakarta.validation.constraints.NotNull;
+
+public record RemoveLicenseRequest(LicenseCluster licenseCluster, @NotNull String entityId) {
   public record LicenseCluster(List<LicenseDto> licenses) {}
 }

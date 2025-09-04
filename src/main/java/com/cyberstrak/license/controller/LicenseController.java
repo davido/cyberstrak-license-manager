@@ -1,9 +1,13 @@
 package com.cyberstrak.license.controller;
 
 import com.cyberstrak.license.dto.AddLicenseRequest;
+import com.cyberstrak.license.dto.CreateLicenseRequest;
 import com.cyberstrak.license.dto.LicenseDto;
 import com.cyberstrak.license.dto.RemoveLicenseRequest;
 import com.cyberstrak.license.service.LicenseService;
+
+import jakarta.validation.Valid;
+
 import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -41,15 +45,22 @@ public class LicenseController {
     return response;
   }
 
+  @PostMapping("/create_license")
+  public ResponseEntity<?> createLicense(@Valid @RequestBody CreateLicenseRequest payload) {
+    LicenseDto license = licenseService.createLicense(payload);
+    logger.debug("Returning license: {}", license);
+    return ResponseEntity.ok(license);
+  }
+
   @PostMapping("/add_license")
-  public ResponseEntity<?> addLicense(@RequestBody AddLicenseRequest payload) {
+  public ResponseEntity<?> addLicense(@Valid @RequestBody AddLicenseRequest payload) {
     List<LicenseDto> licenses = licenseService.addLicense(payload);
     logger.debug("Returning licenses: {}", licenses);
     return ResponseEntity.ok(Map.of("licenses", licenses));
   }
 
   @PostMapping("/remove_license")
-  public ResponseEntity<?> removeLicense(@RequestBody RemoveLicenseRequest request) {
+  public ResponseEntity<?> removeLicense(@Valid @RequestBody RemoveLicenseRequest request) {
     List<LicenseDto> cluster = request.licenseCluster().licenses();
     String entityId = request.entityId();
     logger.debug("Removing licenses: {}, entityId: {}", cluster, entityId);
