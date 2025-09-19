@@ -1,6 +1,6 @@
 # License Manager (Spring Boot)
 
-A full-featured license management backend migrated from Python Flask to Spring Boot, with REST API, Basic Auth, Docker, PostgreSQL/MySQL, Liquibase, Swagger, and HTTPS support via NGINX.
+A full-featured [Rhino Cloud Zoo license management backend](https://developer.rhino3d.com/guides/rhinocommon/cloudzoo/cloudzoo-implement-http-callbacks/) migrated from Python Flask to Spring Boot, with REST API, Basic Auth, Docker, PostgreSQL/MySQL, Liquibase, Swagger, and HTTPS support via NGINX.
 
 ---
 
