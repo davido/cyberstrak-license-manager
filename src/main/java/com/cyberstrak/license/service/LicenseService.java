@@ -181,6 +181,14 @@ public class LicenseService {
         .orElseThrow(() -> new BadRequestException("The license key is not valid"));
   }
 
+  public LicenseDto eraseLicense(String key) {
+    License license = licenseRepo.findByLicenseKey(key).orElse(null);
+    if (license == null) throw new ConflictException("The license key '" + key + "' is not valid.");
+    if (license.getEntityId() != null) throw new ConflictException("The license key '" + key + "' is in use. Remove license first!");
+    licenseRepo.delete(license);
+    return toDto(license);
+  }
+
   public List<LicenseDto> dumpLicenses() {
     return licenseRepo.findAll().stream().map(this::toDto).toList();
   }

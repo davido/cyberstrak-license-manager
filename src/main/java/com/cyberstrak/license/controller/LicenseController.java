@@ -77,6 +77,13 @@ public class LicenseController {
     return ResponseEntity.ok(license);
   }
 
+  @PostMapping("/erase_license")
+  public ResponseEntity<LicenseDto> eraseLicense(@RequestParam("key") String key) {
+    LicenseDto license = licenseService.eraseLicense(key);
+    logger.debug("Erased license: {}", license);
+    return ResponseEntity.ok(license);
+  }
+
   @GetMapping("/dump_licenses")
   public ResponseEntity<?> dumpLicenses() {
     var licenses = licenseService.dumpLicenses();
