@@ -15,7 +15,6 @@ import com.cyberstrak.license.exception.BadRequestException;
 import com.cyberstrak.license.exception.ConflictException;
 import com.cyberstrak.license.repository.LicenseRepository;
 import com.cyberstrak.license.service.LicenseService;
-
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -87,13 +86,12 @@ public class LicenseServiceTest {
     String key = "KEY_42";
     String productId = "PROD_42";
     int numberOfSeats = 2;
-    CreateLicenseRequest request = 
-    		new CreateLicenseRequest(new CreateLicenseRequest.LicenseData(key, productId),
-        		id, epochSeconds,
-        		numberOfSeats);
+    CreateLicenseRequest request =
+        new CreateLicenseRequest(
+            new CreateLicenseRequest.LicenseData(key, productId), id, epochSeconds, numberOfSeats);
 
     LicenseDto result = licenseService.createLicense(request);
- 
+
     assertEquals("SERIAL_42", result.id());
 
     License created = licenseRepository.findById(id).orElse(null);

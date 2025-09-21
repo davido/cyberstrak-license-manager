@@ -5,9 +5,7 @@ import com.cyberstrak.license.dto.CreateLicenseRequest;
 import com.cyberstrak.license.dto.LicenseDto;
 import com.cyberstrak.license.dto.RemoveLicenseRequest;
 import com.cyberstrak.license.service.LicenseService;
-
 import jakarta.validation.Valid;
-
 import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;

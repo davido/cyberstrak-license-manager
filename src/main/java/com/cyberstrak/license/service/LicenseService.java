@@ -54,9 +54,9 @@ public class LicenseService {
   }
 
   public boolean checkAuth(String username, String password) {
-	  if (!ISSUER_ID.equals(username) || !ISSUER_SECRET.equals(password)) {
-		  logger.error("Wrong user or password combination: " + username + ":" + password);
-	  }
+    if (!ISSUER_ID.equals(username) || !ISSUER_SECRET.equals(password)) {
+      logger.error("Wrong user or password combination: " + username + ":" + password);
+    }
     return ISSUER_ID.equals(username) && ISSUER_SECRET.equals(password);
   }
 
@@ -65,29 +65,29 @@ public class LicenseService {
   }
 
   public LicenseDto createLicense(CreateLicenseRequest payload) {
-	    String key = payload.license().key();
-	    String productId = payload.license().aud();
-	    String serial = payload.serial();
-	    Long expiration = payload.expiration();
-	
-	    License license = licenseRepo.findByLicenseKey(serial).orElse(null);
-	    if (license != null) throw new ConflictException("The license id '" + serial + "' already exists.");
+    String key = payload.license().key();
+    String productId = payload.license().aud();
+    String serial = payload.serial();
+    Long expiration = payload.expiration();
 
-	  license = new License();
+    License license = licenseRepo.findByLicenseKey(serial).orElse(null);
+    if (license != null)
+      throw new ConflictException("The license id '" + serial + "' already exists.");
 
-	  license.setLicenseKey(key);
-	  license.setProductId(productId);
-      license.setSerial(serial);
-      license.setNumberOfSeats(payload.numberOfSeats());
-      license.setExpirationDate(
-    		    LocalDateTime.ofInstant(Instant.ofEpochSecond(expiration), ZoneId.systemDefault())
-      );
-      // Defaults
-      license.setEnabled(true);
-      license.setDate(LocalDateTime.now());
+    license = new License();
 
-      licenseRepo.save(license);
-      return toDto(license);
+    license.setLicenseKey(key);
+    license.setProductId(productId);
+    license.setSerial(serial);
+    license.setNumberOfSeats(payload.numberOfSeats());
+    license.setExpirationDate(
+        LocalDateTime.ofInstant(Instant.ofEpochSecond(expiration), ZoneId.systemDefault()));
+    // Defaults
+    license.setEnabled(true);
+    license.setDate(LocalDateTime.now());
+
+    licenseRepo.save(license);
+    return toDto(license);
   }
 
   public List<LicenseDto> addLicense(AddLicenseRequest payload) {
@@ -184,7 +184,8 @@ public class LicenseService {
   public LicenseDto eraseLicense(String key) {
     License license = licenseRepo.findByLicenseKey(key).orElse(null);
     if (license == null) throw new ConflictException("The license key '" + key + "' is not valid.");
-    if (license.getEntityId() != null) throw new ConflictException("The license key '" + key + "' is in use. Remove license first!");
+    if (license.getEntityId() != null)
+      throw new ConflictException("The license key '" + key + "' is in use. Remove license first!");
     licenseRepo.delete(license);
     return toDto(license);
   }
