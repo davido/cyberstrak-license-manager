@@ -17,11 +17,12 @@ DB_DRIVER="${4:-$DB_DRIVER}"
 ISSUER_ID="${5:-$ISSUER_ID}"
 ISSUER_SECRET="${6:-$ISSUER_SECRET}"
 LOG_FILE="${7:-$LOG_FILE}"
+JWT_SECRET="${8:-$JWT_SECRET}"
 
 # 🛑 2️⃣ Validate
-if [ -z "$DB_URL" ] || [ -z "$DB_USERNAME" ] || [ -z "$DB_PASSWORD" ] || [ -z "$DB_DRIVER" ] || [ -z "$ISSUER_ID" ] || [ -z "$ISSUER_SECRET" ] || [ -z "$LOG_FILE" ]; then
-  echo "Usage: ./rest-runner.bash <DB_URL> <DB_USERNAME> <DB_PASSWORD> <DRIVER_CLASS> <ISSUER_ID> <ISSUER_SECRET> <LOG_FILE>"
-  echo "Or set the environment variables: DB_URL, DB_USERNAME, DB_PASSWORD, DB_DRIVER ISSUER_ID ISSUER_SECRET LOG_FILE"
+if [ -z "$DB_URL" ] || [ -z "$DB_USERNAME" ] || [ -z "$DB_PASSWORD" ] || [ -z "$DB_DRIVER" ] || [ -z "$ISSUER_ID" ] || [ -z "$ISSUER_SECRET" ] || [ -z "$LOG_FILE" ] || [ -z "$JWT_SECRET" ]; then
+  echo "Usage: ./rest-runner.bash <DB_URL> <DB_USERNAME> <DB_PASSWORD> <DRIVER_CLASS> <ISSUER_ID> <ISSUER_SECRET> <LOG_FILE> <JWT_SECRET>"
+  echo "Or set the environment variables: DB_URL, DB_USERNAME, DB_PASSWORD, DB_DRIVER ISSUER_ID ISSUER_SECRET LOG_FILE JWT_SECRET"
   exit 1
 fi
 
@@ -40,8 +41,11 @@ else
   exit 1
 fi
 
+JAVA=/opt/java/jdk-25/bin/java
+
 # 🔥 5️⃣ Start app with dynamic DB config
-nohup java \
+nohup $JAVA \
+  --enable-native-access=ALL-UNNAMED \
   -Dspring.datasource.url="$DB_URL" \
   -Dspring.datasource.username="$DB_USERNAME" \
   -Dspring.datasource.password="$DB_PASSWORD" \
@@ -50,6 +54,7 @@ nohup java \
   -Dissuer.id="$ISSUER_ID" \
   -Dissuer.secret="$ISSUER_SECRET" \
   -Dlogging.file.name="$LOG_FILE" \
+  -Dsecurity.jwt.secret="$JWT_SECRET" \
   -jar rest-runner.jar \
   &
 
