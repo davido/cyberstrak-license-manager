@@ -88,4 +88,9 @@ public class LicenseController {
     logger.debug("Returning all licenses: {}", licenses);
     return ResponseEntity.ok(licenses);
   }
+
+  @GetMapping("/api/licenses")
+  public ResponseEntity<?> licenses() {
+    return dumpLicenses();
+  }
 }
