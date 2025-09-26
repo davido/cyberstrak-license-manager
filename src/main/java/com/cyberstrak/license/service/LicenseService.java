@@ -3,6 +3,7 @@ package com.cyberstrak.license.service;
 import com.cyberstrak.license.dto.AddLicenseRequest;
 import com.cyberstrak.license.dto.CreateLicenseRequest;
 import com.cyberstrak.license.dto.LicenseDto;
+import com.cyberstrak.license.dto.LicenseUpsertRequest;
 import com.cyberstrak.license.entity.License;
 import com.cyberstrak.license.exception.BadRequestException;
 import com.cyberstrak.license.exception.ConflictException;
@@ -17,6 +18,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -150,7 +152,7 @@ public class LicenseService {
 
     for (LicenseDto dto : cluster) {
       String serial = dto.id();
-      String aud = dto.aud();
+      String aud = dto.audience();
 
       licenseRepo
           .findById(serial)
@@ -181,6 +183,13 @@ public class LicenseService {
         .orElseThrow(() -> new BadRequestException("The license key is not valid"));
   }
 
+  public LicenseDto getLicense(String id) {
+    return licenseRepo
+        .findById(id)
+        .map(this::toDto)
+        .orElseThrow(() -> new BadRequestException("The license key is not valid"));
+  }
+
   public LicenseDto eraseLicense(String key) {
     License license = licenseRepo.findByLicenseKey(key).orElse(null);
     if (license == null) throw new ConflictException("The license key '" + key + "' is not valid.");
@@ -205,10 +214,44 @@ public class LicenseService {
         l.getSerial(),
         l.getLicenseKey(),
         l.getProductId(),
+        l.isEnabled(),
         ISSUER_ID,
         exp,
         l.getNumberOfSeats(),
         editions,
         metadata);
+  }
+
+  public LicenseDto updateLicense(String key, LicenseUpsertRequest payload) {
+    var existing = licenseRepo.findByLicenseKey(key).orElse(null);
+    if (existing == null) {
+      throw new ConflictException("The license key '" + key + "' is in use. Remove license first!");
+    }
+
+    // Felder aktualisieren (an deine License-Entity anpassen!)
+    existing.setLicenseKey(payload.key());
+    existing.setProductId(payload.audience());
+    existing.setEnabled(payload.active());
+    existing.setExpirationDate(LocalDateTime.now().plusYears(1));
+
+    licenseRepo.save(existing);
+
+    return getLicense(key);
+  }
+
+  public LicenseDto createLicense(LicenseUpsertRequest payload) {
+    var existing = new License();
+    existing.setSerial(UUID.randomUUID().toString());
+    existing.setNumberOfSeats(1);
+
+    // Felder aktualisieren (an deine License-Entity anpassen!)
+    existing.setLicenseKey(payload.key());
+    existing.setProductId(payload.audience());
+    existing.setEnabled(payload.active());
+    existing.setExpirationDate(LocalDateTime.now().plusYears(1));
+
+    licenseRepo.save(existing);
+
+    return getLicense(payload.key());
   }
 }

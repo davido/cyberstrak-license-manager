@@ -3,6 +3,7 @@ package com.cyberstrak.license.controller;
 import com.cyberstrak.license.dto.AddLicenseRequest;
 import com.cyberstrak.license.dto.CreateLicenseRequest;
 import com.cyberstrak.license.dto.LicenseDto;
+import com.cyberstrak.license.dto.LicenseUpsertRequest;
 import com.cyberstrak.license.dto.RemoveLicenseRequest;
 import com.cyberstrak.license.service.LicenseService;
 import jakarta.validation.Valid;
@@ -92,5 +93,39 @@ public class LicenseController {
   @GetMapping("/api/licenses")
   public ResponseEntity<?> licenses() {
     return dumpLicenses();
+  }
+
+  @GetMapping("/api/licenses/{id}")
+  public ResponseEntity<LicenseDto> getLicenseById(@PathVariable("id") String id) {
+    logger.debug("Retrieve license for id: {}", id);
+    LicenseDto license = licenseService.getLicense(id);
+    if (license == null) {
+      logger.error("Cannot retrieve license for id: {}", id);
+      return ResponseEntity.notFound().build();
+    }
+    logger.debug("Returning license: {}", license);
+    return ResponseEntity.ok(license);
+  }
+
+  @PutMapping("/api/licenses/{key}")
+  public ResponseEntity<LicenseDto> updateLicense(
+      @PathVariable("key") String key, @Valid @RequestBody LicenseUpsertRequest payload) {
+    logger.debug("Update new license for key: {}", key);
+    LicenseDto updated = licenseService.updateLicense(key, payload);
+    if (updated == null) {
+      return ResponseEntity.notFound().build();
+    }
+    return ResponseEntity.ok(updated);
+  }
+
+  @PostMapping("/api/licenses")
+  public ResponseEntity<LicenseDto> createLicense(
+      @Valid @RequestBody LicenseUpsertRequest payload) {
+    logger.debug("Create new license for key: {}", payload);
+    LicenseDto license = licenseService.createLicense(payload);
+    if (license == null) {
+      return ResponseEntity.notFound().build();
+    }
+    return ResponseEntity.ok(license);
   }
 }

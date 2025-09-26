@@ -148,7 +148,7 @@ public class LicenseServiceTest {
 
     assertEquals("1", dto.id());
     assertEquals("KEY1", dto.key());
-    assertEquals("PROD1", dto.aud());
+    assertEquals("PROD1", dto.audience());
   }
 
   @Test
@@ -186,7 +186,8 @@ public class LicenseServiceTest {
     license.setEnabled(true);
     licenseRepository.save(license);
 
-    LicenseDto dto = new LicenseDto("1", "KEY1", "PROD1", "issuer-id", null, null, null, null);
+    LicenseDto dto =
+        new LicenseDto("1", "KEY1", "PROD1", true, "issuer-id", null, null, null, null);
 
     licenseService.removeLicenses(List.of(dto), "ENTITY1");
 
@@ -205,7 +206,8 @@ public class LicenseServiceTest {
     license.setEnabled(true);
     licenseRepository.save(license);
 
-    LicenseDto dto = new LicenseDto("1", "KEY1", "PROD1", "issuer-id", null, null, null, null);
+    LicenseDto dto =
+        new LicenseDto("1", "KEY1", "PROD1", true, "issuer-id", null, null, null, null);
 
     // Different entity ID to force mismatch
     assertThrows(
@@ -226,6 +228,6 @@ public class LicenseServiceTest {
 
     assertEquals("123", result.id());
     assertEquals("LICENSE123", result.key());
-    assertEquals("PROD1", result.aud());
+    assertEquals("PROD1", result.audience());
   }
 }
