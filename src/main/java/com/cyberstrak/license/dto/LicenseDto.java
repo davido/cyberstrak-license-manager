@@ -5,8 +5,8 @@ import java.util.Map;
 public record LicenseDto(
     String id,
     String key,
-    String audience,
-    boolean active,
+    String aud,
+    Boolean active,
     String iss,
     Long exp,
     Integer numberOfSeats,

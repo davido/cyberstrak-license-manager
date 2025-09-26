@@ -148,7 +148,7 @@ public class LicenseServiceTest {
 
     assertEquals("1", dto.id());
     assertEquals("KEY1", dto.key());
-    assertEquals("PROD1", dto.audience());
+    assertEquals("PROD1", dto.aud());
   }
 
   @Test
@@ -228,6 +228,6 @@ public class LicenseServiceTest {
 
     assertEquals("123", result.id());
     assertEquals("LICENSE123", result.key());
-    assertEquals("PROD1", result.audience());
+    assertEquals("PROD1", result.aud());
   }
 }

@@ -22,7 +22,7 @@ const LicenseFormPage: React.FC<Props> = ({ mode }) => {
   const isEdit = mode === "edit";
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
-  const [form, setForm] = useState<License>({ id: "", key: "", audience: "", active: true });
+  const [form, setForm] = useState<License>({ id: "", key: "", aud: "", active: true });
 
   useEffect(() => {
     if (isEdit && id) {
@@ -59,8 +59,8 @@ const LicenseFormPage: React.FC<Props> = ({ mode }) => {
             onChange={(e) => setForm({ ...form, key: e.target.value })}
           />
           <TextField
-            label="Audience" value={form.audience} required
-            onChange={(e) => setForm({ ...form, audience: e.target.value })}
+            label="Audience" value={form.aud} required
+            onChange={(e) => setForm({ ...form, aud: e.target.value })}
           />
           <FormControlLabel
             control={<Checkbox checked={form.active} onChange={(e) => setForm({ ...form, active: e.target.checked })} />}

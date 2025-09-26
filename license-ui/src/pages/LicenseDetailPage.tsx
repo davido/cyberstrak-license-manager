@@ -29,7 +29,7 @@ const LicenseDetailPage: React.FC = () => {
         <Typography variant="h6" gutterBottom>Lizenz: {lic.id}</Typography>
         <Box display="grid" gap={1} sx={{ "& b": { mr: 1 } }}>
           <div><b>Key:</b> {lic.key}</div>
-          <div><b>Audience:</b> {lic.audience}</div>
+          <div><b>Audience:</b> {lic.aud}</div>
           <div><b>Aktiv:</b> {lic.active ? "Ja" : "Nein"}</div>
         </Box>
         <Stack direction="row" spacing={1} sx={{ mt: 2 }}>

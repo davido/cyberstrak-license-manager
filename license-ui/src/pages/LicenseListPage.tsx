@@ -43,7 +43,7 @@ const LicenseListPage: React.FC = () => {
     const q = query.toLowerCase();
     return items.filter(i =>
       i.key.toLowerCase().includes(q) ||
-      i.audience.toLowerCase().includes(q) ||
+      i.aud.toLowerCase().includes(q) ||
       (i.id && i.id.toString().includes(q))
     );
   }, [items, query]);
@@ -85,7 +85,7 @@ const LicenseListPage: React.FC = () => {
               <TableRow key={row.id} hover>
                 <TableCell>{row.id}</TableCell>
                 <TableCell>{row.key}</TableCell>
-                <TableCell>{row.audience}</TableCell>
+                <TableCell>{row.aud}</TableCell>
                 <TableCell>{row.active ? "Ja" : "Nein"}</TableCell>
                 <TableCell align="right">
                   <IconButton onClick={() => navigate(`/licenses/${row.id}`)}><VisibilityIcon /></IconButton>

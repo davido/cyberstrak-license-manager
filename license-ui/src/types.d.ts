@@ -1,7 +1,7 @@
 export type License = {
   id: string;
   key: string;
-  audience: string;
+  aud: string;
   active: boolean;
   // optional:
   createdAt?: string;

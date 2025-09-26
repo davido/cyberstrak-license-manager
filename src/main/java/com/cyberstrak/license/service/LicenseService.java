@@ -152,7 +152,7 @@ public class LicenseService {
 
     for (LicenseDto dto : cluster) {
       String serial = dto.id();
-      String aud = dto.audience();
+      String aud = dto.aud();
 
       licenseRepo
           .findById(serial)
@@ -230,7 +230,7 @@ public class LicenseService {
 
     // Felder aktualisieren (an deine License-Entity anpassen!)
     existing.setLicenseKey(payload.key());
-    existing.setProductId(payload.audience());
+    existing.setProductId(payload.aud());
     existing.setEnabled(payload.active());
     existing.setExpirationDate(LocalDateTime.now().plusYears(1));
 
@@ -246,7 +246,7 @@ public class LicenseService {
 
     // Felder aktualisieren (an deine License-Entity anpassen!)
     existing.setLicenseKey(payload.key());
-    existing.setProductId(payload.audience());
+    existing.setProductId(payload.aud());
     existing.setEnabled(payload.active());
     existing.setExpirationDate(LocalDateTime.now().plusYears(1));
 
