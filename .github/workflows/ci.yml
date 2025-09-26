@@ -1,4 +1,4 @@
-name: Java CI with Maven (REST and Shell builds)
+name: Build & Test (Java 25 + Node 24)
 
 on:
   push:
@@ -12,17 +12,31 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v3
+      # -------------------------------
+      # Setup Java (Backend)
+      # -------------------------------
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '21'
+          java-version: '25'
+          cache: maven
 
-      ############################
-      # REST API build
-      ############################
+      # -------------------------------
+      # Setup Node (Frontend)
+      # -------------------------------
+      - name: Set up Node.js 24.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24.2.0'
+          cache: 'npm'
+          cache-dependency-path: license-ui/package-lock.json
+
+      # -------------------------------
+      # Build Backend (REST API)
+      # -------------------------------
       - name: Build REST API (rest-runner.jar)
         run: |
           mvn clean verify -Prest
@@ -34,9 +48,9 @@ jobs:
           name: rest-runner
           path: rest-runner.jar
 
-      ############################
-      # Shell CLI build
-      ############################
+      # -------------------------------
+      # Build Backend (Shell CLI)
+      # -------------------------------
       - name: Build Shell CLI (shell-runner.jar)
         run: |
           mvn clean verify -Pshell
@@ -47,4 +61,21 @@ jobs:
         with:
           name: shell-runner
           path: shell-runner.jar
+
+      # -------------------------------
+      # Build Frontend (React/Vite)
+      # -------------------------------
+      - name: Install frontend deps
+        working-directory: license-ui
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: license-ui
+        run: npm run build
+
+      - name: Upload Frontend artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: license-ui/dist
 
