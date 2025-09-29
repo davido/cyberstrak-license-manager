@@ -238,7 +238,7 @@ public class LicenseService {
 
     licenseRepo.save(existing);
 
-    return getLicense(key);
+    return getLicense(payload.key(), payload.aud());
   }
 
   public LicenseDto createLicense(LicenseUpsertRequest payload) {
