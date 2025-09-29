@@ -7,25 +7,30 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.cyberstrak.license.dto.AddLicenseRequest;
-import com.cyberstrak.license.dto.CreateLicenseRequest;
-import com.cyberstrak.license.dto.LicenseDto;
-import com.cyberstrak.license.entity.License;
-import com.cyberstrak.license.exception.BadRequestException;
-import com.cyberstrak.license.exception.ConflictException;
-import com.cyberstrak.license.repository.LicenseRepository;
-import com.cyberstrak.license.service.LicenseService;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+
+import com.cyberstrak.license.dto.AddLicenseRequest;
+import com.cyberstrak.license.dto.CreateLicenseRequest;
+import com.cyberstrak.license.dto.LicenseDto;
+import com.cyberstrak.license.dto.LicenseUpsertRequest;
+import com.cyberstrak.license.entity.License;
+import com.cyberstrak.license.exception.BadRequestException;
+import com.cyberstrak.license.exception.ConflictException;
+import com.cyberstrak.license.exception.PreconditionFailedException;
+import com.cyberstrak.license.exception.PreconditionRequiredException;
+import com.cyberstrak.license.repository.LicenseRepository;
+import com.cyberstrak.license.service.LicenseService;
 
 @SpringBootTest(classes = LicenseManagerApplication.class)
 @ActiveProfiles("test")
@@ -229,5 +234,131 @@ public class LicenseServiceTest {
     assertEquals("123", result.id());
     assertEquals("LICENSE123", result.key());
     assertEquals("PROD1", result.aud());
+  }
+
+  @Test
+  void testEraseLicenseSuccess() {
+      License license = new License();
+      license.setSerial("ID1");
+      license.setLicenseKey("KEY1");
+      license.setProductId("PROD1");
+      licenseRepository.save(license);
+
+      LicenseDto erased = licenseService.eraseLicense("KEY1");
+
+      assertEquals("KEY1", erased.key());
+      assertFalse(licenseRepository.findById("ID1").isPresent());
+  }
+
+  @Test
+  void testEraseLicenseThrowsIfNotFound() {
+      assertThrows(ConflictException.class, () -> licenseService.eraseLicense("MISSING_KEY"));
+  }
+
+  @Test
+  void testEraseLicenseThrowsIfInUse() {
+      License license = new License();
+      license.setSerial("ID2");
+      license.setLicenseKey("KEY2");
+      license.setProductId("PROD1");
+      license.setEntityId("ENTITY1"); // Lizenz ist in Verwendung
+      licenseRepository.save(license);
+
+      assertThrows(ConflictException.class, () -> licenseService.eraseLicense("KEY2"));
+  }
+
+  @Test
+  void testUpdateLicenseSuccess() {
+      License license = new License();
+      license.setSerial("ID3");
+      license.setLicenseKey("OLD_KEY");
+      license.setProductId("PROD1");
+      license.setEnabled(false);
+      licenseRepository.save(license);
+
+      var payload = new LicenseUpsertRequest("NEW_KEY", "NEW_PROD", true);
+
+      LicenseDto updated = licenseService.updateLicense("OLD_KEY", payload);
+
+      assertEquals("NEW_KEY", updated.key());
+      assertEquals("NEW_PROD", updated.aud());
+      assertTrue(updated.active());
+  }
+
+  @Test
+  void testUpdateLicenseThrowsIfNotFound() {
+      var payload = new LicenseUpsertRequest("KEY_X", "PROD_X", true);
+
+      assertThrows(ConflictException.class, () -> licenseService.updateLicense("MISSING_KEY", payload));
+  }
+
+  @Test
+  void testAddLicenseWithUpgradeSuccess() {
+      // Vorherige Lizenz
+      License previous = new License();
+      previous.setSerial("PREV_ID");
+      previous.setLicenseKey("PREV_KEY");
+      previous.setProductId("PROD1");
+      previous.setEnabled(true);
+      previous.setEntityId("ENTITY1");
+      licenseRepository.save(previous);
+
+      // Upgrade-Lizenz
+      License upgrade = new License();
+      upgrade.setSerial("UPGRADE_ID");
+      upgrade.setLicenseKey("UPGRADE_KEY");
+      upgrade.setProductId("PROD1");
+      upgrade.setEnabled(true);
+      upgrade.setUpgrade(true);
+      upgrade.setUpgradeFromKey("PREV_KEY");
+      licenseRepository.save(upgrade);
+
+      AddLicenseRequest request =
+          new AddLicenseRequest(
+              new AddLicenseRequest.LicenseData("UPGRADE_KEY", "PROD1"),
+              "ENTITY1",
+              "PREV_KEY");
+
+      List<LicenseDto> result = licenseService.addLicense(request);
+
+      assertEquals(2, result.size()); // Upgrade und Previous zurückgegeben
+  }
+
+  @Test
+  void testAddLicenseUpgradeThrowsIfPreconditionMissing() {
+      License upgrade = new License();
+      upgrade.setSerial("UP_ID");
+      upgrade.setLicenseKey("UP_KEY");
+      upgrade.setProductId("PROD1");
+      upgrade.setEnabled(true);
+      upgrade.setUpgrade(true);
+      licenseRepository.save(upgrade);
+
+      AddLicenseRequest request =
+          new AddLicenseRequest(
+              new AddLicenseRequest.LicenseData("UP_KEY", "PROD1"),
+              "ENTITY1",
+              null); // Precondition fehlt
+
+      assertThrows(PreconditionRequiredException.class, () -> licenseService.addLicense(request));
+  }
+
+  @Test
+  void testAddLicenseUpgradeThrowsIfInvalidPrecondition() {
+      License upgrade = new License();
+      upgrade.setSerial("UP_ID2");
+      upgrade.setLicenseKey("UP_KEY2");
+      upgrade.setProductId("PROD1");
+      upgrade.setEnabled(true);
+      upgrade.setUpgrade(true);
+      licenseRepository.save(upgrade);
+
+      AddLicenseRequest request =
+          new AddLicenseRequest(
+              new AddLicenseRequest.LicenseData("UP_KEY2", "PROD1"),
+              "ENTITY1",
+              "WRONG_KEY"); // Falscher Precondition
+
+      assertThrows(PreconditionFailedException.class, () -> licenseService.addLicense(request));
   }
 }
