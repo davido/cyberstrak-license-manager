@@ -4,10 +4,10 @@ import { api } from "../api/client";
 import type { License } from "../types";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Container from "@mui/material/Container";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import AppLayout from "../components/AppLayout";
 
 const LicenseDetailPage: React.FC = () => {
   const { id } = useParams();
@@ -24,7 +24,7 @@ const LicenseDetailPage: React.FC = () => {
   if (!lic) return null;
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 4 }}>
+    <AppLayout>
       <Paper sx={{ p: 3 }}>
         <Typography variant="h6" gutterBottom>Lizenz: {lic.id}</Typography>
         <Box display="grid" gap={1} sx={{ "& b": { mr: 1 } }}>
@@ -37,7 +37,7 @@ const LicenseDetailPage: React.FC = () => {
           <Button variant="contained" onClick={() => navigate(`/licenses/${lic.id}/edit`)}>Bearbeiten</Button>
         </Stack>
       </Paper>
-    </Container>
+    </AppLayout>
   );
 };
 
