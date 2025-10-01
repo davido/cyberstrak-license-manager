@@ -4,7 +4,6 @@ import type { License } from "../types";
 
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Container from "@mui/material/Container";
 import IconButton from "@mui/material/IconButton";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
@@ -24,6 +23,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
 import ConfirmDialog from "../components/ConfirmDialog";
 import { useSnackbar } from "notistack";
+import AppLayout from "../components/AppLayout";
 
 const LicenseListPage: React.FC = () => {
   const [items, setItems] = useState<License[]>([]);
@@ -56,7 +56,7 @@ const LicenseListPage: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4 }}>
+    <AppLayout>
       <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
         <Typography variant="h5">Lizenzen</Typography>
         <Button startIcon={<AddIcon />} variant="contained" onClick={() => navigate("/licenses/new")}>
@@ -108,7 +108,7 @@ const LicenseListPage: React.FC = () => {
         onCancel={() => setConfirmId(null)}
         onConfirm={() => confirmId && onDelete(confirmId)}
       />
-    </Container>
+    </AppLayout>
   );
 };
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { type PropsWithChildren } from "react";
 
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -8,10 +8,11 @@ import Typography from "@mui/material/Typography";
 import Tooltip from "@mui/material/Tooltip";
 
 import LogoutIcon from "@mui/icons-material/Logout";
-import { Outlet, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
+import { useNavigate } from "react-router-dom";
+import Container from "@mui/material/Container";
 
-const AppLayout: React.FC = () => {
+const AppLayout: React.FC<PropsWithChildren> = ({children}) => {
   const { logout, user } = useAuth();
   const navigate = useNavigate();
 
@@ -48,7 +49,9 @@ const AppLayout: React.FC = () => {
       </AppBar>
 
       <Box component="main" sx={{ p: 2 }}>
-        <Outlet />
+        <Container maxWidth="sm" sx={{ mt: 4 }}>
+          {children}
+        </Container>
       </Box>
     </Box>
   );

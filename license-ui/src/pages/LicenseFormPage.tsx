@@ -6,7 +6,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
-import Container from "@mui/material/Container";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
@@ -14,6 +13,7 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 
 import { useSnackbar } from "notistack";
+import AppLayout from "../components/AppLayout";
 
 type Props = { mode: "create" | "edit" };
 
@@ -47,7 +47,7 @@ const LicenseFormPage: React.FC<Props> = ({ mode }) => {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 4 }}>
+    <AppLayout>
       <Paper sx={{ p: 3 }}>
         <Typography variant="h6" gutterBottom>
           {isEdit ? `Lizenz bearbeiten #${id}` : "Neue Lizenz anlegen"}
@@ -72,7 +72,7 @@ const LicenseFormPage: React.FC<Props> = ({ mode }) => {
           </Stack>
         </Box>
       </Paper>
-    </Container>
+    </AppLayout>
   );
 };
 
