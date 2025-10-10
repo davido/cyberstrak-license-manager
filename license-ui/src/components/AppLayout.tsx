@@ -49,7 +49,7 @@ const AppLayout: React.FC<PropsWithChildren> = ({children}) => {
       </AppBar>
 
       <Box component="main" sx={{ p: 2 }}>
-        <Container maxWidth="sm" sx={{ mt: 4 }}>
+        <Container maxWidth="xl" sx={{ mt: 4 }}>
           {children}
         </Container>
       </Box>
