@@ -85,7 +85,7 @@ public class LicenseService {
     license.setExpirationDate(
         LocalDateTime.ofInstant(Instant.ofEpochSecond(expiration), ZoneId.systemDefault()));
     // Defaults
-    license.setEnabled(false);
+    license.setEnabled(true);
     license.setDate(LocalDateTime.now());
 
     licenseRepo.save(license);
@@ -142,7 +142,6 @@ public class LicenseService {
     } else {
       license.setEntityId(entityId);
       license.setDate(LocalDateTime.now());
-      license.setEnabled(true);
       licenseRepo.save(license);
       return List.of(toDto(license));
     }
@@ -169,7 +168,6 @@ public class LicenseService {
       found.forEach(
           l -> {
             l.setEntityId(null);
-            l.setEnabled(false);
             l.setDate(LocalDateTime.now());
           });
       licenseRepo.saveAll(found);
