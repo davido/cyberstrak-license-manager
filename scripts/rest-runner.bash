@@ -9,6 +9,11 @@
 # export DB_DRIVER=org.mariadb.jdbc.Driver
 # ./rest-runner.bash
 
+# Load env file if present
+if [ -f ".env" ]; then
+  source .env
+fi
+
 # 1️⃣ Read arguments OR environment variables
 DB_URL="${1:-$DB_URL}"
 DB_USERNAME="${2:-$DB_USERNAME}"
@@ -44,7 +49,7 @@ fi
 JAVA=/opt/java/jdk-25/bin/java
 
 # 🔥 5️⃣ Start app with dynamic DB config
-nohup $JAVA \
+$JAVA \
   --enable-native-access=ALL-UNNAMED \
   -Dspring.datasource.url="$DB_URL" \
   -Dspring.datasource.username="$DB_USERNAME" \
@@ -55,7 +60,6 @@ nohup $JAVA \
   -Dissuer.secret="$ISSUER_SECRET" \
   -Dlogging.file.name="$LOG_FILE" \
   -Dsecurity.jwt.secret="$JWT_SECRET" \
-  -jar rest-runner.jar \
-  &
+  -jar rest-runner.jar
 
 echo "✅ rest-runner started in background. Logs: $LOG_FILE"
