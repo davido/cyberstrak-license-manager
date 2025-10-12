@@ -69,6 +69,8 @@ public class LicenseService {
   public LicenseDto createLicense(CreateLicenseRequest payload) {
     String key = payload.license().key();
     String productId = payload.license().aud();
+    String email = payload.license().email();
+    String comment = payload.license().comment();
     String serial = payload.serial();
     Long expiration = payload.expiration();
 
@@ -84,6 +86,8 @@ public class LicenseService {
     license.setNumberOfSeats(payload.numberOfSeats());
     license.setExpirationDate(
         LocalDateTime.ofInstant(Instant.ofEpochSecond(expiration), ZoneId.systemDefault()));
+    license.setEmail(email);
+    license.setComment(comment);
     // Defaults
     license.setEnabled(true);
     license.setDate(LocalDateTime.now());
@@ -210,16 +214,20 @@ public class LicenseService {
             ? l.getExpirationDate().atZone(ZoneId.systemDefault()).toEpochSecond()
             : null;
     Object metadata = null;
+
     return new LicenseDto(
         l.getSerial(),
         l.getLicenseKey(),
         l.getProductId(),
+        l.getEntityId(),
         l.isEnabled(),
         ISSUER_ID,
         exp,
         l.getNumberOfSeats(),
         editions,
-        metadata);
+        metadata,
+        l.getEmail(),
+        l.getComment());
   }
 
   public LicenseDto updateLicense(String key, LicenseUpsertRequest payload) {

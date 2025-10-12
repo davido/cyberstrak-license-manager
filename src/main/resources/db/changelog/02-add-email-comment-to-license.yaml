@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: 02
+      author: migration
+      changes:
+        - addColumn:
+            tableName: licenses
+            columns:
+              - column:
+                  name: email
+                  type: VARCHAR(255)
+                  remarks: Email address of license owner
+              - column:
+                  name: comment
+                  type: VARCHAR(1024)
+                  remarks: Optional comment for internal use
+

@@ -91,7 +91,10 @@ public class LicenseServiceTest {
     int numberOfSeats = 2;
     CreateLicenseRequest request =
         new CreateLicenseRequest(
-            new CreateLicenseRequest.LicenseData(key, productId), id, epochSeconds, numberOfSeats);
+            new CreateLicenseRequest.LicenseData(key, productId, "contact@example.com", "test"),
+            id,
+            epochSeconds,
+            numberOfSeats);
 
     LicenseDto result = licenseService.createLicense(request);
 
@@ -190,7 +193,8 @@ public class LicenseServiceTest {
     licenseRepository.save(license);
 
     LicenseDto dto =
-        new LicenseDto("1", "KEY1", "PROD1", true, "issuer-id", null, null, null, null);
+        new LicenseDto(
+            "1", "KEY1", "PROD1", "Entity1", true, "issuer-id", null, null, null, null, null, null);
 
     licenseService.removeLicenses(List.of(dto), "ENTITY1");
 
@@ -210,7 +214,8 @@ public class LicenseServiceTest {
     licenseRepository.save(license);
 
     LicenseDto dto =
-        new LicenseDto("1", "KEY1", "PROD1", true, "issuer-id", null, null, null, null);
+        new LicenseDto(
+            "1", "KEY1", "PROD1", "Entity1", true, "issuer-id", null, null, null, null, null, null);
 
     // Different entity ID to force mismatch
     assertThrows(

@@ -33,8 +33,14 @@ public class License {
 
   private LocalDateTime date;
 
-  // Getters and setters
+  // 🔸 Neue Felder
+  @Column(length = 255)
+  private String email;
 
+  @Column(length = 1024)
+  private String comment;
+
+  // Getters & Setters
   public String getSerial() {
     return serial;
   }
@@ -113,5 +119,21 @@ public class License {
 
   public void setDate(LocalDateTime date) {
     this.date = date;
+  }
+
+  public String getEmail() {
+    return email;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
+  }
+
+  public String getComment() {
+    return comment;
+  }
+
+  public void setComment(String comment) {
+    this.comment = comment;
   }
 }
