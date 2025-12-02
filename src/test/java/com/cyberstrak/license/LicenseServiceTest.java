@@ -279,7 +279,7 @@ public class LicenseServiceTest {
     license.setEnabled(false);
     licenseRepository.save(license);
 
-    var payload = new LicenseUpsertRequest("NEW_KEY", "NEW_PROD", true);
+    var payload = new LicenseUpsertRequest("NEW_KEY", "NEW_PROD", true, null);
 
     LicenseDto updated = licenseService.updateLicense("OLD_KEY", payload);
 
@@ -290,7 +290,7 @@ public class LicenseServiceTest {
 
   @Test
   void testUpdateLicenseThrowsIfNotFound() {
-    var payload = new LicenseUpsertRequest("KEY_X", "PROD_X", true);
+    var payload = new LicenseUpsertRequest("KEY_X", "PROD_X", true, null);
 
     assertThrows(
         ConflictException.class, () -> licenseService.updateLicense("MISSING_KEY", payload));
@@ -362,5 +362,33 @@ public class LicenseServiceTest {
             "WRONG_KEY"); // Falscher Precondition
 
     assertThrows(PreconditionFailedException.class, () -> licenseService.addLicense(request));
+  }
+
+  @Test
+  void testCreateLicense_withNullExpiration() {
+    String id = "SERIAL_NO_EXP";
+    String key = "KEY_NO_EXP";
+    String productId = "PROD_NO_EXP";
+    int numberOfSeats = 2;
+
+    CreateLicenseRequest request =
+        new CreateLicenseRequest(
+            new CreateLicenseRequest.LicenseData(
+                key, productId, "noexp@example.com", "no expiration"),
+            id,
+            null,              // <── WICHTIG
+            numberOfSeats);
+
+    LicenseDto result = licenseService.createLicense(request);
+
+    assertEquals(id, result.id());
+    assertNull(result.exp());        // DTO gibt null zurück
+
+    License created = licenseRepository.findById(id).orElse(null);
+    assertNotNull(created);
+    assertEquals(key, created.getLicenseKey());
+    assertEquals(productId, created.getProductId());
+    assertEquals(numberOfSeats, created.getNumberOfSeats());
+    assertNull(created.getExpirationDate());  // DB-Wert ist null
   }
 }

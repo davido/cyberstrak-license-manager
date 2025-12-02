@@ -17,7 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
@@ -236,4 +236,38 @@ public class LicenseControllerTest {
         .andExpect(jsonPath("$[0].key").value("KEY1"))
         .andExpect(jsonPath("$[1].key").value("KEY2"));
   }
+
+  @Test
+  void testCreateLicenseEndpoint_acceptsNullExpiration() throws Exception {
+    String json =
+        """
+        {
+          "license": {
+            "key": "KEY_JSON_NULL",
+            "aud": "PROD_JSON",
+            "email": "json@example.org",
+            "comment": "null expiration via JSON"
+          },
+          "serial": "SERIAL_JSON_NULL",
+          "expiration": null,
+          "numberOfSeats": 2
+        }
+        """;
+
+    mockMvc
+        .perform(
+            post("/create_license")
+                .with(httpBasic(ISSUER_ID, ISSUER_SECRET))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(json))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.key").value("KEY_JSON_NULL"))
+        // falls Jackson null-Felder serialisiert:
+        .andExpect(jsonPath("$.exp").doesNotExist());
+
+    License saved =
+        licenseRepository.findById("SERIAL_JSON_NULL").orElseThrow();
+    assertNull(saved.getExpirationDate());
+  }
+
 }

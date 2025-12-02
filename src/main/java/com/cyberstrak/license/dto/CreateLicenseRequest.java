@@ -10,7 +10,7 @@ import jakarta.validation.constraints.Size;
 public record CreateLicenseRequest(
     LicenseData license,
     @NotNull String serial,
-    @Positive long expiration,
+    @Positive Long expiration,
     @Min(1) @Max(10) int numberOfSeats) {
   public record LicenseData(
       @NotNull String key,

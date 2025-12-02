@@ -17,8 +17,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.test.LocalServerPort;
-import org.springframework.boot.web.server.test.client.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.boot.resttestclient.TestRestTemplate;
+import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.test.context.ActiveProfiles;
@@ -27,6 +28,7 @@ import org.springframework.test.context.ActiveProfiles;
     classes = LicenseManagerApplication.class,
     webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
+@AutoConfigureTestRestTemplate
 public class LicenseControllerIntegrationTest {
 
   @LocalServerPort int port;
@@ -151,7 +153,7 @@ public class LicenseControllerIntegrationTest {
     license.setEnabled(false);
     licenseRepository.save(license);
 
-    LicenseUpsertRequest updateReq = new LicenseUpsertRequest("NEW_KEY_001", "PROD_NEW", true);
+    LicenseUpsertRequest updateReq = new LicenseUpsertRequest("NEW_KEY_001", "PROD_NEW", true, null);
 
     ResponseEntity<Map<String, Object>> resp =
         exchange("/api/licenses/OLD_KEY_001", HttpMethod.PUT, updateReq, jwt);
@@ -162,5 +164,39 @@ public class LicenseControllerIntegrationTest {
     assertThat(updated.getLicenseKey()).isEqualTo("NEW_KEY_001");
     assertThat(updated.getProductId()).isEqualTo("PROD_NEW");
     assertThat(updated.isEnabled()).isTrue();
+  }
+
+  @Test
+  void createLicense_acceptsNullExpiration() {
+    String jwt = loginAndGetJwt();
+
+    String serial = "INTEG_NULL_EXP_001";
+    String key = "KEY_NULL_EXP_001";
+    String productId = "PROD_NULL_EXP_001";
+    int numberOfSeats = 1;
+    String email = "null-exp@example.org";
+    String comment = "Expiration is null";
+
+    CreateLicenseRequest.LicenseData licenseData =
+        new CreateLicenseRequest.LicenseData(key, productId, email, comment);
+    CreateLicenseRequest req =
+        new CreateLicenseRequest(licenseData, serial, null, numberOfSeats);
+
+    ResponseEntity<Map<String, Object>> response =
+        exchange("/create_license", HttpMethod.POST, req, jwt);
+
+    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+    // DB prüfen
+    License persisted = licenseRepository.findById(serial).orElseThrow();
+    assertThat(persisted.getExpirationDate()).isNull();
+    assertThat(persisted.getEmail()).isEqualTo(email);
+    assertThat(persisted.getComment()).isEqualTo(comment);
+
+    // Response JSON prüfen (DTO -> Map)
+    Map<String, Object> body = response.getBody();
+    assertThat(body).isNotNull();
+    // je nach Jackson-Konfiguration: Feld existiert und ist null
+    assertThat(body.get("exp")).isNull();
   }
 }

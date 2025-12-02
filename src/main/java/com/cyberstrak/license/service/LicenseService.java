@@ -84,8 +84,13 @@ public class LicenseService {
     license.setProductId(productId);
     license.setSerial(serial);
     license.setNumberOfSeats(payload.numberOfSeats());
-    license.setExpirationDate(
-        LocalDateTime.ofInstant(Instant.ofEpochSecond(expiration), ZoneId.systemDefault()));
+
+    if (expiration != null) {
+        license.setExpirationDate(
+            LocalDateTime.ofInstant(Instant.ofEpochSecond(expiration), ZoneId.systemDefault()));
+      } else {
+        license.setExpirationDate(null);
+      }
     license.setEmail(email);
     license.setComment(comment);
     // Defaults
@@ -236,11 +241,16 @@ public class LicenseService {
       throw new ConflictException("The license key '" + key + "' is in use. Remove license first!");
     }
 
-    // Felder aktualisieren (an deine License-Entity anpassen!)
     existing.setLicenseKey(payload.key());
     existing.setProductId(payload.aud());
     existing.setEnabled(payload.active());
-    existing.setExpirationDate(LocalDateTime.now().plusYears(1));
+    if (payload.expiration() != null) {
+    	  existing.setExpirationDate(
+    	      LocalDateTime.ofInstant(
+    	          Instant.ofEpochSecond(payload.expiration()), ZoneId.systemDefault()));
+    	} else {
+    	  existing.setExpirationDate(null);
+    	}
 
     licenseRepo.save(existing);
 
